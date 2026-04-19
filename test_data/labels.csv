@@ -1,0 +1,19 @@
+image_name,class_id,class_name
+class_12_00007.ppm,12,Priority road
+class_12_00010.ppm,12,Priority road
+class_12_00037.ppm,12,Priority road
+class_13_00026.ppm,13,Yield
+class_13_00051.ppm,13,Yield
+class_13_00054.ppm,13,Yield
+class_14_00093.ppm,14,Stop
+class_14_00111.ppm,14,Stop
+class_14_00132.ppm,14,Stop
+class_17_00031.ppm,17,No entry
+class_17_00035.ppm,17,No entry
+class_17_00119.ppm,17,No entry
+class_25_00008.ppm,25,Road work
+class_25_00045.ppm,25,Road work
+class_25_00050.ppm,25,Road work
+class_38_00002.ppm,38,Keep right
+class_38_00005.ppm,38,Keep right
+class_38_00019.ppm,38,Keep right
