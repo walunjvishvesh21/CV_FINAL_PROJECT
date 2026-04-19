@@ -1,0 +1,4 @@
+metric,value
+test_loss,0.19936013239844938
+test_accuracy,0.9582554517133957
+best_val_accuracy,0.9840534979423868

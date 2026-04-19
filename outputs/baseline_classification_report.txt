@@ -1,0 +1,15 @@
+Test Loss: 0.3536
+Test Accuracy: 0.9330
+
+               precision    recall  f1-score   support
+
+Priority road       0.95      0.91      0.93       690
+        Yield       0.90      0.97      0.93       720
+         Stop       1.00      0.87      0.93       270
+     No entry       0.95      0.89      0.92       360
+    Road work       0.94      0.94      0.94       480
+   Keep right       0.92      0.96      0.94       690
+
+     accuracy                           0.93      3210
+    macro avg       0.94      0.92      0.93      3210
+ weighted avg       0.93      0.93      0.93      3210
