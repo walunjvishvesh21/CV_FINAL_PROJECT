@@ -1,3 +1,6 @@
+# # This is a Simple environment check script to verify that the required Python libraries
+#  are installed and working correctly.
+
 import os
 import sys
 import torch
