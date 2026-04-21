@@ -38,7 +38,55 @@ data/GTSRB/
 │   └── Images/
 └── GT-final_test.csv
 
+```
 
 ## Included Test Data
 
 A small test_data/ folder is included in this repository for demonstration and reproducibility purposes. It contains a small sample of test images from the selected 6-class subset along with a labels.csv file.
+
+
+## Backbone Model
+
+The project uses ResNet50 pretrained on ImageNet as the transfer learning backbone.
+
+## Experiment Configurations
+
+**1. Baseline**
+
+Train ResNet50 on the original selected GTSRB subset with no augmentation or synthesis.
+
+**2. Original Data + Augmentation**
+
+Train ResNet50 using moderate training-time augmentations such as rotation, translation, and color jitter.
+
+**3. Original Data + Synthesized Data**
+
+Generate synthetic training images from the original training set using perturbations such as blur, brightness changes, noise, and occlusion, then train on both real and synthetic data.
+
+**4. Original Data + Synthesized Data + Augmentation**
+
+Train on the combined real and synthetic training set while also applying training-time augmentation.
+
+## Final Results
+
+Test Accuracy by Configuration
+
+Baseline: **93.30%**
+Augmented: **94.14%**
+Synthesized: **95.83%**
+Synthesized + Augmented: **95.64%**
+
+
+## Best Model
+
+The best-performing model was the Synthesized Data configuration with a test accuracy of 95.83%.
+
+## Robustness Testing
+
+We compared the baseline model and the best model under the following corruptions:
+
+Clean
+Noise
+Blur
+Occlusion
+Low light
