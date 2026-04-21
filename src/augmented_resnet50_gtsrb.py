@@ -50,7 +50,12 @@ label_map = {cls_id: idx for idx, cls_id in enumerate(SELECTED_CLASSES)}
 inv_label_map = {idx: cls_id for cls_id, idx in label_map.items()}
 
 
+# # Augmentation experiment: training and evaluating ResNet50 
+# on the same GTSRB subset using original data plus training-time augmentation.
+
+
 def set_seed(seed=42):
+     # we are Setting random seeds for reproducibility so training results are more consistent
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -68,6 +73,9 @@ print("TEST_CSV exists:", os.path.exists(TEST_CSV))
 
 
 def build_train_dataframe(train_dir, selected_classes, label_map):
+
+     #    Here we try to Build a dataframe of training image paths for the selected classes
+    #     with original class IDs and remapped labels.
     records = []
     for cls_id in selected_classes:
         class_folder = os.path.join(train_dir, f"{cls_id:05d}")
@@ -84,6 +92,8 @@ def build_train_dataframe(train_dir, selected_classes, label_map):
 
 
 def build_test_dataframe(test_dir, test_csv_path, selected_classes, label_map):
+        # here we are Reading the official GTSRB test CSV, keeping only the selected classes, and creating
+    #a dataframe containing test image paths and labels.
     test_csv = pd.read_csv(test_csv_path, sep=';')
     filtered = test_csv[test_csv["ClassId"].isin(selected_classes)].copy()
     filtered["filepath"] = filtered["Filename"].apply(lambda x: os.path.join(test_dir, x))
@@ -111,14 +121,18 @@ print("Test size:", len(test_df))
 
 
 class GTSRBSubsetDataset(Dataset):
+    #    This is a Custom PyTorch dataset that loads GTSRB images from a dataframe and applies transforms. 
     def __init__(self, dataframe, transform=None):
         self.dataframe = dataframe
         self.transform = transform
 
     def __len__(self):
+          # This Returns the total number of samples in the dataset.
         return len(self.dataframe)
 
     def __getitem__(self, idx):
+            #   This Loads one image and its label by index, then converts the image to RGB,
+        #   applying transforms, and returns the processed image-label pair.
         row = self.dataframe.iloc[idx]
         image = Image.open(row["filepath"]).convert("RGB")
         label = int(row["label"])
@@ -154,6 +168,9 @@ test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num
 
 
 def build_model(num_classes):
+
+        #   This  Loads an ImageNet-pretrained ResNet50, freezes the backbone,
+    #    and replaces the final fully connected layer for our 6-class classification task.
     model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     for param in model.parameters():
         param.requires_grad = False
@@ -169,6 +186,7 @@ optimizer = optim.Adam(model.fc.parameters(), lr=LEARNING_RATE)
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
+    #   This Runs one full training epoch and returns average training loss and accuracy.
     model.train()
     running_loss = 0.0
     running_correct = 0
@@ -193,6 +211,8 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
 
 
 def evaluate(model, loader, criterion, device):
+        #     Here we are Evaluating the model on validation or test data and return average loss,
+    #     accuracy, true labels, and predicted labels.
     model.eval()
     running_loss = 0.0
     running_correct = 0
@@ -329,7 +349,7 @@ plt.savefig(os.path.join(OUTPUT_DIR, "augmented_confusion_matrix.png"))
 plt.close()
 
 # =========================
-# SAVE CSV FILES
+# SAVING CSV FILES
 # =========================
 pd.DataFrame(history).to_csv(
     os.path.join(OUTPUT_DIR, "augmented_training_history.csv"),
