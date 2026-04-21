@@ -51,8 +51,13 @@ CLASS_NAMES = {
 label_map = {cls_id: idx for idx, cls_id in enumerate(SELECTED_CLASSES)}
 inv_label_map = {idx: cls_id for cls_id, idx in label_map.items()}
 
+# # Synthesized + augmentation experiment: train ResNet50 on real + synthetic images
+#  while also applying augmentation during training.
+
+
 
 def set_seed(seed=42):
+    #     Setting random seeds for reproducibility so training and synthetic image generation are repeatable.
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -70,6 +75,7 @@ print("TEST_CSV exists:", os.path.exists(TEST_CSV))
 
 
 def build_train_dataframe(train_dir, selected_classes, label_map):
+     #   Building a dataframe of real training images for the selected classes.
     records = []
     for cls_id in selected_classes:
         class_folder = os.path.join(train_dir, f"{cls_id:05d}")
@@ -87,6 +93,7 @@ def build_train_dataframe(train_dir, selected_classes, label_map):
 
 
 def build_test_dataframe(test_dir, test_csv_path, selected_classes, label_map):
+     #   Here we Build a dataframe of filtered test images using the official GTSRB test CSV.
     test_csv = pd.read_csv(test_csv_path, sep=';')
     filtered = test_csv[test_csv["ClassId"].isin(selected_classes)].copy()
     filtered["filepath"] = filtered["Filename"].apply(lambda x: os.path.join(test_dir, x))
@@ -97,6 +104,7 @@ def build_test_dataframe(test_dir, test_csv_path, selected_classes, label_map):
 
 
 def add_gaussian_noise(pil_img, sigma=18):
+     #    We need to Add Gaussian noise to an image to simulate sensor noise or low-quality image capture.
     arr = np.array(pil_img).astype(np.float32)
     noise = np.random.normal(0, sigma, arr.shape)
     arr = np.clip(arr + noise, 0, 255).astype(np.uint8)
@@ -104,6 +112,7 @@ def add_gaussian_noise(pil_img, sigma=18):
 
 
 def add_occlusion(pil_img):
+    #    We also added a random rectangular occlusion block to simulate partial obstruction of a traffic sign.
     img = pil_img.copy()
     draw = ImageDraw.Draw(img)
     w, h = img.size
@@ -122,6 +131,10 @@ def add_occlusion(pil_img):
 
 
 def synthesize_image(img):
+    #    Here we Creating one synthetic image using one or two stronger, saved perturbations.
+    # This is different from config 2 because these are generated and saved as new files.
+
+
     out = img.copy()
 
     operations = [
@@ -152,6 +165,9 @@ def synthesize_image(img):
 
 
 def generate_synthetic_dataset(train_split_df, synth_dir, variants_per_image=1):
+    #    Generating and saving synthetic images only from TRAIN split.
+    # Validation/test stay untouched.
+
     synth_records = []
 
     for cls_id in SELECTED_CLASSES:
@@ -218,6 +234,7 @@ print("Synthetic train images:", len(synth_df))
 
 
 class GTSRBSubsetDataset(Dataset):
+    #   creating Custom dataset for loading both real and synthetic training images from a dataframe.
     def __init__(self, dataframe, transform=None):
         self.dataframe = dataframe
         self.transform = transform
@@ -234,7 +251,7 @@ class GTSRBSubsetDataset(Dataset):
         return image, label
 
 
-# Config 4: combined real + synthetic AND augmented during training
+# Config 4: Here we combined real + synthetic AND augmented during training
 train_transform = transforms.Compose([
     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.RandomRotation(10),
@@ -258,6 +275,8 @@ test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num
 
 
 def build_model(num_classes):
+    #     Loading an ImageNet-pretrained ResNet50, freeze the feature extractor,
+    # and replacing the final classifier for our selected traffic sign classes.
     model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     for param in model.parameters():
         param.requires_grad = False
@@ -273,6 +292,7 @@ optimizer = optim.Adam(model.fc.parameters(), lr=LEARNING_RATE)
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
+      # we Train the model for one epoch on the combined real + synthetic training set.
     model.train()
     running_loss = 0.0
     running_correct = 0
@@ -297,6 +317,8 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
 
 
 def evaluate(model, loader, criterion, device):
+        #   then we   Evaluate the synthesized-data model on validation or test data and return
+    # loss, accuracy, and prediction details.
     model.eval()
     running_loss = 0.0
     running_correct = 0
@@ -433,7 +455,7 @@ plt.savefig(os.path.join(OUTPUT_DIR, "synth_aug_confusion_matrix.png"))
 plt.close()
 
 # =========================
-# SAVE CSV FILES
+# SAVING CSV FILES
 # =========================
 pd.DataFrame(history).to_csv(
     os.path.join(OUTPUT_DIR, "synth_aug_training_history.csv"),
