@@ -90,3 +90,24 @@ Noise
 Blur
 Occlusion
 Low light
+
+
+
+## Robustness Accuracy Comparison
+
+Corruption	                          Baseline	                Best Model (Synthesized)
+  Clean	                               93.30%	                        95.83%
+  Noise	                               58.13%	                        76.98%
+  Blur	                               64.17%	                        83.27%
+  Occlusion	                           83.58%	                        91.43%
+  Low Light	                           90.25%	                        93.68%
+
+## Key Findings
+
+Augmentation improved performance over the baseline.
+
+Synthesized data produced the best overall performance.
+
+The synthesized-data model outperformed the baseline under all tested corruptions.
+
+The largest robustness gains appeared under noise and blur.
