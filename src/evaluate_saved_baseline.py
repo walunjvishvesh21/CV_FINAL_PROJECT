@@ -35,6 +35,12 @@ CLASS_NAMES = {
     38: "Keep right"
 }
 
+
+# # Here we Reload and evaluate the saved baseline model to recover test accuracy,
+#  classification report, and confusion matrix without retraining.
+
+
+
 label_map = {cls_id: idx for idx, cls_id in enumerate(SELECTED_CLASSES)}
 inv_label_map = {idx: cls_id for cls_id, idx in label_map.items()}
 
@@ -57,14 +63,18 @@ print("Test size:", len(test_df))
 # DATASET
 # =========================
 class GTSRBSubsetDataset(Dataset):
+    #    creating Custom dataset used to reload the filtered GTSRB test subset for baseline evaluation.
     def __init__(self, dataframe, transform=None):
         self.dataframe = dataframe
         self.transform = transform
 
     def __len__(self):
+        #  this Returns the total number of samples in the dataset.
         return len(self.dataframe)
 
     def __getitem__(self, idx):
+        #  Loads one image and label from the dataframe, apply transforms,
+        # and returns the processed sample.
         row = self.dataframe.iloc[idx]
         image = Image.open(row["filepath"]).convert("RGB")
         label = int(row["label"])
@@ -83,7 +93,7 @@ test_dataset = GTSRBSubsetDataset(test_df, transform=transform)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
 
 # =========================
-# LOAD MODEL
+# LOADING MODEL
 # =========================
 model = models.resnet50(weights=None)
 in_features = model.fc.in_features
@@ -94,7 +104,7 @@ model = model.to(device)
 model.eval()
 
 # =========================
-# EVALUATE
+# EVALUATING
 # =========================
 all_preds = []
 all_labels = []
@@ -116,7 +126,7 @@ report = classification_report(all_labels, all_preds, target_names=target_names)
 print("Classification Report:\n")
 print(report)
 
-# Save report
+# We Save the report
 with open(os.path.join(OUTPUT_DIR, "baseline_classification_report.txt"), "w", encoding="utf-8") as f:
     f.write(f"Recovered Test Accuracy: {test_acc:.4f}\n\n")
     f.write(report)
