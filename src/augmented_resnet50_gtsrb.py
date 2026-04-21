@@ -144,6 +144,10 @@ class GTSRBSubsetDataset(Dataset):
 # =========================================================
 # AUGMENTED TRAIN TRANSFORM
 # =========================================================
+
+## Configuration 2: we are applying moderate training-time augmentation to the original training data.
+# Validation and test sets remain unchanged so that the comparison is staying fair.
+
 train_transform = transforms.Compose([
     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.RandomRotation(10),
