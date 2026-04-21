@@ -133,7 +133,7 @@ def add_occlusion(pil_img):
 
 def synthesize_image(img):
     """
-    Creating one synthetic image using one or two stronger, saved perturbations.
+    Here we Creating one synthetic image using one or two stronger, saved perturbations.
     This is different from config 2 because these are generated and saved as new files.
     """
     out = img.copy()
