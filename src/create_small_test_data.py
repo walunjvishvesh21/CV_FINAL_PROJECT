@@ -1,3 +1,6 @@
+# we created a small GitHub-friendly test_data folder by copying a few sample test 
+# images per class and saving their labels in a CSV file.
+
 import os
 import shutil
 import pandas as pd
@@ -25,13 +28,13 @@ CLASS_NAMES = {
 
 os.makedirs(SMALL_TEST_IMAGES_DIR, exist_ok=True)
 
-# Read full test CSV
+# Reading full test CSV
 test_df = pd.read_csv(TEST_CSV, sep=';')
 
-# Keep only your selected classes
+# we only Keep only the selected classes which is 6 .
 filtered_df = test_df[test_df["ClassId"].isin(SELECTED_CLASSES)].copy()
 
-# Pick small sample from each class
+# now we Pick small sample from each class
 sampled_rows = []
 
 for cls_id in SELECTED_CLASSES:
@@ -64,3 +67,5 @@ labels_df.to_csv(SMALL_TEST_LABELS_CSV, index=False)
 print("Created small test data folder at:", SMALL_TEST_DIR)
 print("Total images copied:", len(records))
 print("Saved labels file:", SMALL_TEST_LABELS_CSV)
+
+# # Saved the copied image names and labels into test_data/labels.csv for GitHub reproducibility.
