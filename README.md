@@ -95,12 +95,15 @@ Low light
 
 ## Robustness Accuracy Comparison
 
+```text
 Corruption	                          Baseline	                Best Model (Synthesized)
   Clean	                               93.30%	                        95.83%
   Noise	                               58.13%	                        76.98%
   Blur	                               64.17%	                        83.27%
   Occlusion	                           83.58%	                        91.43%
   Low Light	                           90.25%	                        93.68%
+
+```
 
 ## Key Findings
 
@@ -115,6 +118,7 @@ The largest robustness gains appeared under noise and blur.
 
 
 ## Repository Structure
+```text 
 
 CV_FINAL_PROJECT/
 |-- src/
@@ -128,7 +132,7 @@ CV_FINAL_PROJECT/
 |--- .gitignore
 |--- CV_FINAL_PROPOSAL.pdf
 
-
+```
 
 ## Main Python Files
 
@@ -184,11 +188,14 @@ python src/baseline_resnet50_gtsrb.py
 Other configurations:
 
 python src/augmented_resnet50_gtsrb.py
+
 python src/synthesized_resnet50_gtsrb.py
+
 python src/synth_aug_resnet50_gtsrb.py
 
 
 **3. Run robustness testing**
+
 python src/robustness_test_baseline_vs_best.py
 Outputs
 
