@@ -183,21 +183,22 @@ pip install torch torchvision torchaudio pandas scikit-learn matplotlib pillow n
 
 Example:
 
-python src/baseline_resnet50_gtsrb.py
+***python src/baseline_resnet50_gtsrb.py***
 
 Other configurations:
 
-python src/augmented_resnet50_gtsrb.py
+***python src/augmented_resnet50_gtsrb.py***
 
-python src/synthesized_resnet50_gtsrb.py
+***python src/synthesized_resnet50_gtsrb.py***
 
-python src/synth_aug_resnet50_gtsrb.py
+***python src/synth_aug_resnet50_gtsrb.py***
 
 
 **3. Run robustness testing**
 
-python src/robustness_test_baseline_vs_best.py
-Outputs
+***python src/robustness_test_baseline_vs_best.py***
+
+## Outputs
 
 The outputs/ folder contains:
 
