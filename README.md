@@ -21,22 +21,22 @@ The goal is to compare performance across these configurations and evaluate robu
 We use the **German Traffic Sign Recognition Benchmark (GTSRB)** as the dataset for this project.
 
 Selected classes:
-- 00012 — Priority road
-- 00013 — Yield
-- 00014 — Stop
-- 00017 — No entry
-- 00025 — Road work
-- 00038 — Keep right
+- 00012 -- Priority road
+- 00013 -- Yield
+- 00014 -- Stop
+- 00017 -- No entry
+- 00025 -- Road work
+- 00038 -- Keep right
 
 The full dataset is not included in this repository due to size. To run the full experiments, download the official GTSRB dataset separately and place it in the following structure:
 
 ```text
 data/GTSRB/
-├── Final_Training/
-│   └── Images/
-├── Final_Test/
-│   └── Images/
-└── GT-final_test.csv
+|-- Final_Training/
+│   |___ Images/
+|---Final_Test/
+│   |___ Images/
+|--- GT-final_test.csv
 
 ```
 
