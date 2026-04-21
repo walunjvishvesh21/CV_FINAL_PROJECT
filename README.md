@@ -1,3 +1,16 @@
+## Acknowledgment and Development Notes
+
+During this project, we used **Google Gemini** mainly to understand concepts and technical ideas. It helped us learn the differences between baseline training, augmentation, and synthesized data, as well as proper train/validation/test splitting. It also helped us understand evaluation ideas such as confusion matrices, robustness testing, and how different corruptions like noise, blur, occlusion, and low-light conditions affect image classification.
+
+We also faced several technical issues during development, such as Python environment setup problems, file path confusion, and difficulties saving outputs correctly. At first, some parts of the workflow were confusing, especially keeping the four experiment configurations consistent while changing only the required part of the pipeline. These issues were gradually resolved through debugging, repeated testing, and careful verification of results.
+
+Some of the Python files in this project look similar because the same training and evaluation pipeline was reused across all four experiment settings. This was done intentionally so that the comparison between configurations would stay fair, consistent, and easy to understand.
+
+
+
+
+
+
 # Traffic Sign Classification with Transfer Learning
 
 ## Project Title
