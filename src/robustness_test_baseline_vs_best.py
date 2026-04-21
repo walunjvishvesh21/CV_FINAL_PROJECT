@@ -11,9 +11,9 @@ from torchvision import transforms, models
 from sklearn.metrics import accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
 
-# =========================================================
+# ===================
 # CONFIG
-# =========================================================
+# ===================
 ROOT_DIR = r"C:\Users\Vishvesh\OneDrive\Desktop\SEM 1 PROJECTS\html\CV_FINAL_PROJECT\data\GTSRB"
 TEST_DIR = os.path.join(ROOT_DIR, "Final_Test", "Images")
 TEST_CSV = os.path.join(ROOT_DIR, "GT-final_test.csv")
@@ -46,7 +46,7 @@ print("Using device:", device)
 
 
 # =========================================================
-# BUILD TEST DATAFRAME
+# BUILDING TEST DATAFRAME
 # =========================================================
 test_csv = pd.read_csv(TEST_CSV, sep=';')
 test_df = test_csv[test_csv["ClassId"].isin(SELECTED_CLASSES)].copy()
@@ -59,18 +59,28 @@ print("Filtered test size:", len(test_df))
 
 
 # =========================================================
-# CORRUPTION FUNCTIONS
+# BELOW ARE CORRUPTION FUNCTIONS
 # =========================================================
+
+
+
+# Robustness evaluation: We are comparing the baseline model and the best model 
+# under clean, noise, blur, occlusion, and low-light test conditions.
+
+
 def add_gaussian_noise(img, sigma=20):
+    #  Adding Gaussian noise to a test image to simulate noisy or degraded capture conditions.
     arr = np.array(img).astype(np.float32)
     noise = np.random.normal(0, sigma, arr.shape)
     arr = np.clip(arr + noise, 0, 255).astype(np.uint8)
     return Image.fromarray(arr)
 
 def add_blur(img, radius=2.0):
+    #    Applying Gaussian blur to simulate out-of-focus or motion-blurred images.
     return img.filter(ImageFilter.GaussianBlur(radius=radius))
 
 def add_occlusion(img):
+    #    now we Adding  a rectangular block over part of the image to simulate partial occlusion.
     out = img.copy()
     draw = ImageDraw.Draw(out)
     w, h = out.size
@@ -88,6 +98,7 @@ def add_occlusion(img):
     return out
 
 def add_low_light(img, factor=0.5):
+    #    This will Reduce image brightness to simulate darker lighting conditions.
     return ImageEnhance.Brightness(img).enhance(factor)
 
 
@@ -95,15 +106,18 @@ def add_low_light(img, factor=0.5):
 # DATASET
 # =========================================================
 class CorruptedGTSRBDataset(Dataset):
+    #  Now we create Custom dataset that applies a selected corruption to each test image before evaluation.
     def __init__(self, dataframe, corruption="clean", transform=None):
         self.dataframe = dataframe
         self.corruption = corruption
         self.transform = transform
 
     def __len__(self):
+        #     Returns the total number of samples in the corrupted test dataset.
         return len(self.dataframe)
 
     def apply_corruption(self, image):
+        #   now Applying  the chosen corruption type to the input image and return the corrupted version.
         if self.corruption == "clean":
             return image
         elif self.corruption == "noise":
@@ -118,6 +132,8 @@ class CorruptedGTSRBDataset(Dataset):
             raise ValueError(f"Unknown corruption type: {self.corruption}")
 
     def __getitem__(self, idx):
+        #    Loading  one test image, applying the requested corruption, and  applying transforms,
+       #  and return the processed image and label.
         row = self.dataframe.iloc[idx]
         image = Image.open(row["filepath"]).convert("RGB")
         label = int(row["label"])
@@ -140,6 +156,7 @@ transform = transforms.Compose([
 # MODEL LOADING
 # =========================================================
 def load_resnet50_model(model_path, num_classes):
+    # this will Load a saved ResNet50 checkpoint and prepare it for evaluation on the selected classes.
     model = models.resnet50(weights=None)
     in_features = model.fc.in_features
     model.fc = nn.Linear(in_features, num_classes)
@@ -157,6 +174,7 @@ best_model = load_resnet50_model(BEST_MODEL_PATH, len(SELECTED_CLASSES))
 # EVALUATION
 # =========================================================
 def evaluate_model(model, loader):
+    #    Evaluating a saved model on a corrupted test loader and return accuracy and confusion matrix.
     all_preds = []
     all_labels = []
 
@@ -211,7 +229,7 @@ print("\nSaved robustness results to:", results_csv_path)
 
 
 # =========================================================
-# PLOT ROBUSTNESS COMPARISON
+# PLOTTING ROBUSTNESS COMPARISON
 # =========================================================
 x = np.arange(len(results_df))
 width = 0.35
@@ -234,9 +252,10 @@ print("Saved robustness plot to:", robustness_plot_path)
 
 
 # =========================================================
-# SAVE CLEAN CONFUSION MATRICES
+# NOW WE SAVE CLEAN CONFUSION MATRICES
 # =========================================================
 def save_confusion_matrix(cm, title, save_path):
+    # this SaveS a confusion matrix figure for visual comparison between models on the clean test set.
     class_labels_pretty = [CLASS_NAMES[cls_id] for cls_id in SELECTED_CLASSES]
 
     plt.figure(figsize=(8, 6))
